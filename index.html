@@ -1,4 +1,4 @@
-<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -15,7 +15,7 @@
       color: #00008b;
       display: flex;
       justify-content: center;
-      align-items: center;
+      align-items: flex-start;
       min-height: 100vh;
       overflow-x: hidden;
       position: relative;
@@ -195,7 +195,7 @@
       border-top: 6px solid #ff9933;
       border-bottom: 6px solid #138808;
       backdrop-filter: blur(5px);
-      overflow: hidden;
+      margin-top: 20px;
     }
 
     .container::before, .container::after {
@@ -485,22 +485,6 @@
       transform: scale(1.1);
     }
 
-    .mute-icon {
-      position: absolute;
-      bottom: 15px;
-      right: 15px;
-      cursor: pointer;
-      font-size: 28px;
-      color: #00008b;
-      transition: color 0.4s, transform 0.4s;
-      z-index: 4;
-    }
-
-    .mute-icon:hover, .mute-icon:active {
-      color: #ff9933;
-      transform: rotate(360deg) scale(1.2);
-    }
-
     .share-section {
       margin-top: 25px;
       background: linear-gradient(145deg, rgba(255, 153, 51, 0.2), rgba(255, 255, 255, 0.2), rgba(19, 136, 8, 0.2));
@@ -564,7 +548,7 @@
     .or { display: block; font-size: 16px; color: #00008b; }
 
     @media (max-width: 600px) {
-      .container { width: 95%; padding: 20px; border-radius: 15px; }
+      .container { width: 95%; padding: 20px; border-radius: 15px; margin-top: 15px; }
       .headline { font-size: 28px; margin-bottom: 10px; margin-top: 45px; }
       .subline { font-size: 16px; margin-bottom: 20px; }
       .gif-container { height: 180px; }
@@ -635,25 +619,18 @@
       </div>
 
       <div class="greeting-line">
-        <span class="en">Freedom is not free -- it came with sacrifice. Let's honor it.</span>
+        <span class="en">Freedom is not free — it came with sacrifice. Let’s honor it.</span>
         <span class="or">ସ୍ୱାଧୀନତା ମାଗଣା ନୁହେଁ; ଏହା ବଳିଦାନ ସହିତ ଆସିଛି। ଆସନ୍ତୁ, ଏହାକୁ ସମ୍ମାନ କରିବା।</span>
       </div>
 
       <div class="greeting-line">
-        <span class="en">Let's unite to protect our freedom and build a brighter future.</span>
+        <span class="en">Let’s unite to protect our freedom and build a brighter future.</span>
         <span class="or">ସ୍ୱାଧୀନତାକୁ ସୁରକ୍ଷିତ କରି ଆଗାମୀକୁ ଆଲୋକିତ କରିବା ପାଇଁ ଆସନ୍ତୁ ଏକତାବଦ୍ଧ ହେବା।</span>
       </div>
 
       <div class="gif-container">
         <img src="assets/independence-day.gif" alt="Independence Day GIF">
       </div>
-
-      <div id="sound-hint" style="margin-bottom: 10px;">
-        <span class="en">Tap to enable sound</span>
-        <span class="or">ସ୍ୱର ସକ୍ରିୟ କରିବାକୁ ଟାପ୍ କରନ୍ତୁ</span>
-      </div>
-
-      <span class="mute-icon" onclick="toggleMute()">🔇</span>
 
       <div class="input-section">
         <label>
@@ -688,10 +665,6 @@
         </div>
       </div>
     </div>
-
-    <audio id="bg-music" loop>
-      <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
-    </audio>
   </div>
 
   <script>
@@ -754,35 +727,6 @@
       }
     }
 
-    // Audio control
-    const audio = document.getElementById('bg-music');
-    const muteIcon = document.querySelector('.mute-icon');
-    const soundHint = document.getElementById('sound-hint');
-    let isMuted = true;
-
-    function toggleMute() {
-      event.stopPropagation(); // Prevent triggering greeting section click
-      isMuted = !isMuted;
-      audio.muted = isMuted;
-      muteIcon.textContent = isMuted ? '🔇' : '🔊';
-      if (!isMuted) {
-        audio.play().catch(() => {
-          soundHint.style.display = 'block';
-        });
-      } else {
-        soundHint.style.display = 'none';
-      }
-    }
-
-    document.body.addEventListener('click', () => {
-      if (audio.paused && !isMuted) {
-        audio.play().catch(() => {
-          soundHint.style.display = 'block';
-        });
-      }
-      soundHint.style.display = 'none';
-    }, { once: true });
-
     // Handle URL parameters and initialize page
     function initializePage() {
       const urlParams = new URLSearchParams(window.location.search);
@@ -794,7 +738,7 @@
         const formattedName = sender.charAt(0).toUpperCase() + sender.slice(1).toLowerCase();
         document.getElementById('sender-name-en').textContent = formattedName;
         document.getElementById('sender-name-or').textContent = formattedName;
-        toggleMute();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       } else {
         document.getElementById('sender-input').style.display = 'block';
         document.getElementById('greeting-section').style.display = 'none';
@@ -808,12 +752,12 @@
     // Create link
     function createLink(event) {
       triggerFirework(event);
-      event.stopPropagation(); // Prevent triggering greeting section click
+      event.stopPropagation();
       const name = document.getElementById('name-input').value.trim();
       if (name) {
         const link = `${window.location.origin}${window.location.pathname}?sender=${encodeURIComponent(name)}`;
         navigator.clipboard.writeText(getShareMessage(link));
-        window.location.href = link; // Update current page URL
+        shareWhatsApp(name); // Redirect to WhatsApp
       } else {
         alert('Please enter your name!');
       }
@@ -822,12 +766,12 @@
     // Create new link
     function createNewLink(event) {
       triggerFirework(event);
-      event.stopPropagation(); // Prevent triggering greeting section click
+      event.stopPropagation();
       const name = document.getElementById('new-name-input').value.trim();
       if (name) {
         const link = `${window.location.origin}${window.location.pathname}?sender=${encodeURIComponent(name)}`;
         navigator.clipboard.writeText(getShareMessage(link));
-        window.location.href = link; // Update current page URL
+        shareWhatsApp(name); // Redirect to WhatsApp
       } else {
         alert('Please enter your name!');
       }
@@ -835,9 +779,8 @@
 
     // Handle greeting section click
     function handleGreetingClick(event) {
-      // Prevent clicks on child elements from triggering redirect
-      if (event.target.closest('.mute-icon, .input-section, .share-section, button')) {
-        return; // Do nothing if clicking mute icon, input section, share section, or buttons
+      if (event.target.closest('.input-section, .share-section, button')) {
+        return; // Do nothing if clicking input section, share section, or buttons
       }
       triggerFirework(event);
       shareWhatsApp();
@@ -846,11 +789,11 @@
     // Share functions
     function getShareMessage(link) {
       const senderName = document.getElementById('sender-name-en').textContent || document.getElementById('name-input').value.trim() || "a friend";
-      return `Happy Independence Day! 🇮🇳\n\n${senderName} has sent you a special greeting. Click the link to see it: ${link}\n\nJai Hind!`;
+      return `Happy Independence Day! 🇮🇳\n\n${senderName} has sent you a special greeting. Click the link to see it: ${link}\n\nଏହି ଲିଙ୍କ୍ କ୍ଲିକ୍ କରି ତୁମର ନାଁ ଲେଖ\n\nJai Hind!`;
     }
 
-    function shareWhatsApp() {
-      const senderName = document.getElementById('sender-name-en').textContent || document.getElementById('name-input').value.trim() || "a friend";
+    function shareWhatsApp(name = null) {
+      const senderName = name || document.getElementById('sender-name-en').textContent || document.getElementById('name-input').value.trim() || "a friend";
       const link = `${window.location.origin}${window.location.pathname}?sender=${encodeURIComponent(senderName)}`;
       const message = getShareMessage(link);
       window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`, '_blank');
